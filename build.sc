@@ -11,8 +11,8 @@ object game extends ScalaJSModule with MillIndigo {
   val gameAssetsDirectory = os.pwd / "assets"
   val showCursor          = true
   val title               = "LD 48 Game"
-  val windowStartWidth    = 720
-  val windowStartHeight   = 480
+  val windowStartWidth    = 1280
+  val windowStartHeight   = 720
 
   def ivyDeps = Agg(
     ivy"io.indigoengine::indigo-json-circe::0.7.0",
