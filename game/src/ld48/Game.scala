@@ -22,7 +22,7 @@ object HelloIndigo extends IndigoGame[Unit, Unit, GlobalModel, Unit] {
 
   val gameBindingKey = BindingKey("game")
 
-  def scenes(bootData: Unit)       = NonEmptyList(GameScene)
+  def scenes(bootData: Unit)       = NonEmptyList(GameScene, EndGameScene)
   def initialScene(bootData: Unit) = Some(GameScene.name)
   val eventFilters                 = EventFilters.Restricted
   def boot(flags: Map[String, String]) = Outcome(
@@ -58,12 +58,14 @@ object HelloIndigo extends IndigoGame[Unit, Unit, GlobalModel, Unit] {
   val assetName       = AssetName("dots")
   val blockAssetName  = AssetName("block")
   val playerAssetName = AssetName("player")
+  val hitboxAssetName = AssetName("hitbox")
 
   val assets: Set[AssetType] =
     Set(
       AssetType.Image(assetName, AssetPath("assets/dots.png")),
-      AssetType.Image(blockAssetName, AssetPath("assets/grass-block.png")),
-      AssetType.Image(playerAssetName, AssetPath("assets/little-guy.png"))
+      AssetType.Image(blockAssetName, AssetPath("assets/steel-beams.png")),
+      AssetType.Image(playerAssetName, AssetPath("assets/down-dude.png")),
+      AssetType.Image(hitboxAssetName, AssetPath("assets/red-box.png"))
     )
 
   val fonts: Set[FontInfo] = Set()

@@ -9,14 +9,20 @@ import indigo.shared.scenegraph.Graphic
 import indigo.shared.materials.Material
 import Player._
 import indigoextras.geometry.Polygon
+import indigoextras.effectmaterials.LegacyEffects
 
 case class Player(
+    facing: Either["left", "right"],
     position: Vector2,
     velocity: Vector2,
     acceleration: Vector2,
+    leftDown: Boolean = false,
+    rightDown: Boolean = false,
     punchCooldown: Seconds = Seconds.zero,
-    kickCooldown: Seconds = Seconds.zero
+    kickCooldown: Seconds = Seconds.zero,
+    stunCooldown: Seconds = Seconds.zero
 ) {
+  private val maxStunCooldown  = Seconds(1)
   private val maxPunchCooldown = Seconds(.25)
   private val maxKickCooldown  = Seconds(.5)
   private val moveAcceleration = 20.0  // TODO Tune
@@ -26,17 +32,48 @@ case class Player(
   private val gravity          = Vector2(0, 5)
 
   val attackCoolingDown =
-    punchCooldown > Seconds.zero || kickCooldown > Seconds.zero
+    stunCooldown > Seconds.zero || punchCooldown > Seconds.zero || kickCooldown > Seconds.zero
+
+  def move(direction: Either["left", "right"], down: Boolean) =
+    direction match {
+      case Left(_)  => copy(leftDown = down)
+      case Right(_) => copy(rightDown = down)
+    }
+
+  def punching = punchCooldown > Seconds.zero
+  def kicking  = kickCooldown > Seconds.zero
 
   def kick =
     if (!attackCoolingDown)
       copy(kickCooldown = maxKickCooldown, acceleration = Vector2.zero)
     else this
 
+  def punch =
+    if (!attackCoolingDown)
+      copy(punchCooldown = maxPunchCooldown, acceleration = Vector2.zero)
+    else this
+
+  def stun =
+    if (stunCooldown <= Seconds.zero) // if not already stunned
+      copy(stunCooldown = maxStunCooldown)
+    else this
+
+  val hitbox = Player.computeHitbox(position, true)
+
+  val attackHitbox =
+    if (punchCooldown > Seconds.zero)
+      if (facing.isRight)
+        Rectangle(position.moveBy(Vector2(16, 16)).toPoint, Point(17, -5))
+      else
+        Rectangle(position.moveBy(Vector2(16, 16)).toPoint, Point(-17, -5))
+    else if (kickCooldown > Seconds.zero)
+      if (facing.isRight) Rectangle(hitbox.bottomLeft, Point(27, -5))
+      else Rectangle(hitbox.bottomRight, Point(-27, -5))
+    else
+      Rectangle.zero
+
   def update(
       platforms: Seq[Platform],
-      leftDown: Boolean,
-      rightDown: Boolean,
       t: Seconds
   ): Player = {
     val updatedAcceleration =
@@ -62,7 +99,6 @@ case class Player(
           HelloIndigo.viewportWidth / HelloIndigo.magnification - 16,
           math.max(0, x)
         )
-      println(wallCorrectedX)
       Vector2(wallCorrectedX, y)
     }
 
@@ -74,7 +110,7 @@ case class Player(
             (
                 i =>
                   playerCollidesBlock(
-                    computeHitbox(precollisionPosition),
+                    computeHitbox(precollisionPosition, false),
                     i,
                     platform.y
                   )
@@ -88,29 +124,76 @@ case class Player(
       position = collisionCorrectedPosition,
       velocity = newVelocity,
       acceleration = Vector2(0, 0),
+      stunCooldown = stunCooldown - t,
       punchCooldown = punchCooldown - t,
-      kickCooldown = kickCooldown - t
+      kickCooldown = kickCooldown - t,
+      facing = velocity.x match {
+        case x if x > 0.01  => "right"
+        case x if x < -0.01 => "left"
+        case _              => facing
+      }
     )
   }
 
-  val hitbox = Player.computeHitbox(position)
-
   def render = Seq(
-    Graphic(32, 32, Material.Bitmap(HelloIndigo.playerAssetName))
+    Graphic(
+      32,
+      32,
+      Material.ImageEffects(HelloIndigo.playerAssetName).withTint(RGBA.Red)
+    ) //Material.Bitmap(HelloIndigo.playerAssetName))
+      //.withMaterial(Material.ImageEffects)
+      .flipHorizontal(facing.isLeft)
       //.withRef(16, 32)
       //.withScale(Vector2(.8, .8))
-      .moveTo(position.toPoint),
-    Shape.Box(hitbox, Fill.Color(RGBA.Red), Stroke(5, RGBA.Red))
+      .moveTo(position.toPoint)
+
+    //.withMaterial(
+
+    //)
+    /*
+      .modifyMaterial {
+        case m: LegacyEffects => m.withTint(RGBA.Red)
+        case m                => m
+      }*/,
+    Shape
+      .Polygon(
+        Fill.Color(RGBA.Zero),
+        Stroke(3, RGBA.Red)
+      )(
+        hitbox.topLeft,
+        hitbox.topRight,
+        hitbox.bottomRight,
+        hitbox.bottomLeft
+      ),
+    Shape
+      .Polygon(
+        Fill.Color(RGBA.Zero),
+        Stroke(2, RGBA.Red)
+      )(
+        attackHitbox.topLeft,
+        attackHitbox.topRight,
+        attackHitbox.bottomRight,
+        attackHitbox.bottomLeft
+      )
+    //.Box(hitbox, Fill.Color(RGBA.Zero), Stroke(3, RGBA.Red))
+    //Graphic(attackHitbox, 2, Material.Bitmap(HelloIndigo.hitboxAssetName))
+
+    //Shape.Box(attackHitbox, Fill.Color(RGBA.Zero), Stroke(2, RGBA.Red))
     //.moveTo(position.toPoint)
   )
-
 }
 
 object Player {
-  def computeHitbox(position: Vector2) = {
-    val ul = position + Vector2(10, 26)
-    val lr = ul + Vector2(12, 6)
-    Rectangle.fromTwoPoints(ul.toPoint, lr.toPoint)
+  def computeHitbox(position: Vector2, isAttack: Boolean) = {
+    if (isAttack) {
+      val ul = position + Vector2(6, 0)
+      val lr = ul + Vector2(20, 32)
+      Rectangle.fromTwoPoints(ul.toPoint, lr.toPoint)
+    } else {
+      val ul = position + Vector2(10, 26)
+      val lr = ul + Vector2(12, 6)
+      Rectangle.fromTwoPoints(ul.toPoint, lr.toPoint)
+    }
   }
 
   // return corrected player y value

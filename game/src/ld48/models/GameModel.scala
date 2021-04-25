@@ -2,14 +2,15 @@ package ld48.models
 
 import indigo.shared.time.Seconds
 import indigo.shared.datatypes.Vector2
+import ld48._
 
 case class GameModel(
-    leftDown: Boolean,
-    rightDown: Boolean,
     time: Seconds,
     spawnTimer: Seconds,
-    player: Player,
-    platforms: Seq[Platform]
+    player1: Player,
+    player2: Player,
+    platforms: Seq[Platform],
+    gameOver: Boolean
 ) {
 
   def update(t: Seconds): GameModel = {
@@ -28,57 +29,26 @@ case class GameModel(
 
     val updatedPlats = newPlats.map(_.update(speed, t)).filter(_.y > -20)
 
-    val updatedPlayer = player.update(updatedPlats, leftDown, rightDown, t)
+    var updatedPlayer1 = player1.update(updatedPlats, t)
+    var updatedPlayer2 = player2.update(updatedPlats, t)
 
-    // return corrected player y value
-    def playerCollidesBlock(
-        player: Player,
-        blockI: Int,
-        blockY: Double
-    ): Option[Double] = {
-      val blockHitbox = Block.hitbox(blockY, blockI)
-      val blockUL     = blockHitbox.topLeft
-      val blockLR     = blockHitbox.bottomRight
-
-      val playerUL = player.hitbox.topLeft
-      val playerLR = player.hitbox.bottomRight
-      if (
-        playerUL.x < blockLR.x &&
-        playerLR.x > blockUL.x &&
-        playerUL.y < blockLR.y &&
-        playerLR.y > blockUL.y
-      ) {
-        Some(blockY - 32)
-      } else None
-    }
-
-    val maybeCollisionBlock = updatedPlats
-      .map(platform => {
-        platform.blockList.zipWithIndex
-          .collect { case (Some(_), i) => i }
-          .collectFirst(
-            (
-                i => playerCollidesBlock(updatedPlayer, i, platform.y)
-            ).unlift
-          )
-      })
-      .collectFirst { case Some(d) => d }
-
-    val collisionCorrectedPlayer = maybeCollisionBlock match {
-      case None => updatedPlayer
-      case Some(y) =>
-        updatedPlayer.copy(position = updatedPlayer.position.copy(y = y))
-    }
+    var updatedGameOver =
+      if (updatedPlayer1.position.y < -10 || updatedPlayer2.position.y < -10)
+        false
+      else false
 
     this.copy(
-      player = collisionCorrectedPlayer,
+      player1 = updatedPlayer1,
+      player2 = updatedPlayer2,
       platforms = updatedPlats,
       time = time + t,
-      spawnTimer = updatedSpawn + t
+      spawnTimer = updatedSpawn + t,
+      gameOver = updatedGameOver
     )
   }
 
-  def render = (player.render ++ platforms.flatMap(_.render)).toList
+  def render =
+    (player1.render ++ player2.render ++ platforms.flatMap(_.render)).toList
 
 }
 
@@ -86,12 +56,12 @@ object GameModel {
 
   def initial: GameModel =
     GameModel(
-      leftDown = false,
-      rightDown = false,
       time = Seconds(0),
       spawnTimer = Seconds(99), // always spawn one right away
-      player = Player(Vector2(300, 20), Vector2(0, 0), Vector2(0, 0)),
-      platforms = Platform.initial
+      player1 = Player("right", Vector2(100, 20), Vector2(0, 0), Vector2(0, 0)),
+      player2 = Player("left", Vector2(300, 20), Vector2(0, 0), Vector2(0, 0)),
+      platforms = Platform.initial,
+      gameOver = false
     )
 
 }
