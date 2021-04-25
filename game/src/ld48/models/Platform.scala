@@ -5,7 +5,7 @@ import indigo._
 
 case class Platform(y: Double, blockList: Seq[Option[Block]]) {
   def update(speed: Double, t: Seconds): Platform =
-    this.copy(y = y - (speed + 30) * t * 1.5)
+    this //.copy(y = y - (speed + 30) * t * 1.5)
 
   def render =
     blockList.zipWithIndex.collect { case (Some(block), i) =>
@@ -19,9 +19,10 @@ object Platform {
 
   def addPlatform(y: Double): Platform = {
     val r = new scala.util.Random()
-    val platforms = Seq.fill(11)(Option(Block())) // default platform is all blocks
-    val holeIndex : Integer = r.between(1, 11)
-    val updatedPlatforms = platforms.updated(holeIndex, None)
+    val platforms =
+      Seq.fill(11)(Option(Block())) // default platform is all blocks
+    val holeIndex: Integer = r.between(1, 11)
+    val updatedPlatforms   = platforms.updated(holeIndex, None)
     Platform(
       y, // add platforms under the map in case player gets a lucky fall through
       //Seq.fill(11)(getRandomBlock(r))

@@ -23,7 +23,7 @@ case class Player(
     kickCooldown: Seconds = Seconds.zero,
     stunCooldown: Seconds = Seconds.zero
 ) {
-  private val maxStunCooldown  = Seconds(1)
+  private val maxStunCooldown  = Seconds(5)
   private val maxPunchCooldown = Seconds(.25)
   private val maxKickCooldown  = Seconds(.5)
   private val moveAcceleration = 50.0  // TODO Tune
@@ -41,8 +41,8 @@ case class Player(
       case Right(_) => copy(rightDown = down)
     }
 
-  def punching = punchCooldown > Seconds.zero
-  def kicking  = kickCooldown > Seconds.zero
+  def punching = punchCooldown / 2 > Seconds.zero
+  def kicking  = kickCooldown / 2 > Seconds.zero
 
   def kick =
     if (!attackCoolingDown)
@@ -59,17 +59,27 @@ case class Player(
       copy(stunCooldown = maxStunCooldown)
     else this
 
+  def knockUp = copy(velocity = velocity + Vector2(0, -25000))
+
   val hitbox = Player.computeHitbox(position, true)
 
   val attackHitbox =
-    if (punchCooldown > Seconds.zero)
+    if (punching)
       if (facing.isRight)
-        Rectangle(position.moveBy(Vector2(16, 16)).toPoint, Point(17, -5))
+        Rectangle(
+          position.moveBy(Vector2(16, 16)).toPoint + Point(0, -5),
+          Point(17, 5)
+        )
       else
-        Rectangle(position.moveBy(Vector2(16, 16)).toPoint, Point(-17, -5))
-    else if (kickCooldown > Seconds.zero)
-      if (facing.isRight) Rectangle(hitbox.bottomLeft, Point(27, -5))
-      else Rectangle(hitbox.bottomRight, Point(-27, -5))
+        Rectangle(
+          position.moveBy(Vector2(16, 16)).toPoint + Point(-17, -5),
+          Point(17, 5)
+        )
+    else if (kicking)
+      if (facing.isRight)
+        Rectangle(hitbox.bottomLeft + Point(0, -5), Point(27, 5))
+      else
+        Rectangle(hitbox.bottomRight + Point(-27, -5), Point(27, 5))
     else
       Rectangle.zero
 
@@ -89,8 +99,11 @@ case class Player(
 
     val effectiveDrag = if (updatedAcceleration == Vector2.zero) dragCoef else 1
 
-    val newVelocity =
-      (velocity + updatedAcceleration * t * moveSpeed) * effectiveDrag
+    val newVelocity = {
+      val Vector2(x, y) =
+        (velocity + updatedAcceleration * t * moveSpeed) * effectiveDrag
+      Vector2(math.max(math.min(maxSpeed, x), maxSpeed * -1), y)
+    }
 
     val precollisionPosition = {
       val Vector2(x, y) =
@@ -140,8 +153,9 @@ case class Player(
     Graphic(
       32,
       32,
-      Material.ImageEffects(HelloIndigo.playerAssetName).withTint(this.color)
-    ) //Material.Bitmap(HelloIndigo.playerAssetName))
+      //Material.ImageEffects(HelloIndigo.playerAssetName).withTint(this.color)
+      Material.Bitmap(HelloIndigo.playerAssetName)
+    )
       //.withMaterial(Material.ImageEffects)
       .flipHorizontal(facing.isLeft)
       //.withRef(16, 32)
@@ -156,7 +170,7 @@ case class Player(
         case m: LegacyEffects => m.withTint(RGBA.Red)
         case m                => m
       }*/,
-    /*Shape
+    Shape
       .Polygon(
         Fill.Color(RGBA.Zero),
         Stroke(3, RGBA.Red)
@@ -165,7 +179,7 @@ case class Player(
         hitbox.topRight,
         hitbox.bottomRight,
         hitbox.bottomLeft
-      ),*/
+      ),
     Shape
       .Polygon(
         Fill.Color(RGBA.Zero),
@@ -203,18 +217,23 @@ object Player {
       blockI: Int,
       blockY: Double
   ): Option[Double] = {
+
     val blockHitbox = Block.hitbox(blockY, blockI)
+    /*
     val blockUL     = blockHitbox.topLeft
     val blockLR     = blockHitbox.bottomRight
 
     val playerUL = playerHitbox.topLeft
     val playerLR = playerHitbox.bottomRight
+     */
 
     if (
+      /*
       playerUL.x < blockLR.x &&
       playerLR.x > blockUL.x &&
       playerUL.y < blockLR.y &&
-      playerLR.y > blockUL.y
+      playerLR.y > blockUL.y*/
+      blockHitbox.overlaps(playerHitbox)
     ) {
       Some(blockY - 32)
     } else None
