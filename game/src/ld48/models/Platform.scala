@@ -19,9 +19,13 @@ object Platform {
 
   def addPlatform(y: Double): Platform = {
     val r = new scala.util.Random()
+    val platforms = Seq.fill(11)(Option(Block())) // default platform is all blocks
+    val holeIndex : Integer = r.between(1, 11)
+    val updatedPlatforms = platforms.updated(holeIndex, None)
     Platform(
       y, // add platforms under the map in case player gets a lucky fall through
-      Seq.fill(11)(getRandomBlock(r))
+      //Seq.fill(11)(getRandomBlock(r))
+      updatedPlatforms
     )
   }
 
