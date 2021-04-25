@@ -16,6 +16,8 @@ import indigo.shared.materials
 import indigoextras.effectmaterials.Border
 import ld48.models._
 import ld48.scenes._
+import ld48.Player1
+import ld48.Player2
 
 @JSExportTopLevel("IndigoGame")
 object HelloIndigo extends IndigoGame[Unit, Unit, GlobalModel, Unit] {
@@ -56,18 +58,18 @@ object HelloIndigo extends IndigoGame[Unit, Unit, GlobalModel, Unit] {
   val animations: Set[Animation] =
     Set.empty
 
-  val assetName       = AssetName("dots")
-  val blockAssetName  = AssetName("block")
-  val playerAssetName = AssetName("player")
-  val hitboxAssetName = AssetName("hitbox")
+  val assetName           = AssetName("dots")
+  val blockAssetName      = AssetName("block")
+  val hitboxAssetName     = AssetName("hitbox")
+  val backgroundAssetName = AssetName("background")
 
   val assets: Set[AssetType] =
     Set(
-      AssetType.Image(assetName, AssetPath("assets/dots.png")),
+      AssetType
+        .Image(backgroundAssetName, AssetPath("assets/background-tile.png")),
       AssetType.Image(blockAssetName, AssetPath("assets/steel-beams.png")),
-      AssetType.Image(playerAssetName, AssetPath("assets/down-dude.png")),
       AssetType.Image(hitboxAssetName, AssetPath("assets/red-box.png"))
-    )
+    ) ++ Player1.assets("") ++ Player2.assets("")
 
   val fonts: Set[FontInfo] = Set()
 

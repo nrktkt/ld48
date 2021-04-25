@@ -4,8 +4,8 @@ import ld48._
 import indigo._
 
 case class Platform(y: Double, blockList: Seq[Option[Block]]) {
-  def update(speed: Double, t: Seconds): Platform =
-    this //.copy(y = y - (speed + 30) * t * 1.5)
+  def update(speed: Double, t: Seconds, halted: Boolean): Platform =
+    if (halted) this else this.copy(y = y - (speed + 30) * t * 1.5)
 
   def render =
     blockList.zipWithIndex.collect { case (Some(block), i) =>

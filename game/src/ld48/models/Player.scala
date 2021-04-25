@@ -10,6 +10,9 @@ import indigo.shared.materials.Material
 import Player._
 import indigoextras.geometry.Polygon
 import indigoextras.effectmaterials.LegacyEffects
+import ld48.Loader
+import ld48.Player1
+import ld48.Player2
 
 case class Player(
     facing: Either["left", "right"],
@@ -21,9 +24,10 @@ case class Player(
     rightDown: Boolean = false,
     punchCooldown: Seconds = Seconds.zero,
     kickCooldown: Seconds = Seconds.zero,
-    stunCooldown: Seconds = Seconds.zero
+    stunCooldown: Seconds = Seconds.zero,
+    isPlayerOne: Boolean = true
 ) {
-  private val maxStunCooldown  = Seconds(5)
+  private val maxStunCooldown  = Seconds(2)
   private val maxPunchCooldown = Seconds(.25)
   private val maxKickCooldown  = Seconds(.5)
   private val moveAcceleration = 50.0  // TODO Tune
@@ -43,6 +47,7 @@ case class Player(
 
   def punching = punchCooldown / 2 > Seconds.zero
   def kicking  = kickCooldown / 2 > Seconds.zero
+  def stunned  = stunCooldown > Seconds.zero
 
   def kick =
     if (!attackCoolingDown)
@@ -67,19 +72,22 @@ case class Player(
     if (punching)
       if (facing.isRight)
         Rectangle(
-          position.moveBy(Vector2(16, 16)).toPoint + Point(0, -5),
-          Point(17, 5)
+          position.moveBy(14, 15).toPoint,
+          punchSize
         )
       else
         Rectangle(
-          position.moveBy(Vector2(16, 16)).toPoint + Point(-17, -5),
-          Point(17, 5)
-        )
+          position.moveBy(18, 15).toPoint - punchSize.withY(0),
+          punchSize //                      ^
+        )           // rectangle collision is broken for negative sizes, so origin can't be top right
     else if (kicking)
       if (facing.isRight)
-        Rectangle(hitbox.bottomLeft + Point(0, -5), Point(27, 5))
+        Rectangle(position.moveBy(16, 22).toPoint, kickSize)
       else
-        Rectangle(hitbox.bottomRight + Point(-27, -5), Point(27, 5))
+        Rectangle(
+          position.moveBy(16, 22).toPoint - kickSize.withY(0),
+          kickSize //                       ^
+        )          //               same as for punch
     else
       Rectangle.zero
 
@@ -149,60 +157,48 @@ case class Player(
     )
   }
 
+  def renderPlayer =
+    if (stunned) renderStunned(isPlayerOne)
+    else if (kicking) renderKick(isPlayerOne)
+    else if (punching) renderPunch(isPlayerOne)
+    else renderNormal(isPlayerOne)
+
   def render = Seq(
-    Graphic(
-      32,
-      32,
-      //Material.ImageEffects(HelloIndigo.playerAssetName).withTint(this.color)
-      Material.Bitmap(HelloIndigo.playerAssetName)
-    )
-      //.withMaterial(Material.ImageEffects)
+    renderPlayer
       .flipHorizontal(facing.isLeft)
-      //.withRef(16, 32)
-      //.withScale(Vector2(.8, .8))
       .moveTo(position.toPoint)
-
-    //.withMaterial(
-
-    //)
-    /*
-      .modifyMaterial {
-        case m: LegacyEffects => m.withTint(RGBA.Red)
-        case m                => m
-      }*/,
-    Shape
-      .Polygon(
-        Fill.Color(RGBA.Zero),
-        Stroke(3, RGBA.Red)
-      )(
-        hitbox.topLeft,
-        hitbox.topRight,
-        hitbox.bottomRight,
-        hitbox.bottomLeft
-      ),
-    Shape
-      .Polygon(
-        Fill.Color(RGBA.Zero),
-        Stroke(2, RGBA.Red)
-      )(
-        attackHitbox.topLeft,
-        attackHitbox.topRight,
-        attackHitbox.bottomRight,
-        attackHitbox.bottomLeft
-      )
-    //.Box(hitbox, Fill.Color(RGBA.Zero), Stroke(3, RGBA.Red))
-    //Graphic(attackHitbox, 2, Material.Bitmap(HelloIndigo.hitboxAssetName))
-
-    //Shape.Box(attackHitbox, Fill.Color(RGBA.Zero), Stroke(2, RGBA.Red))
-    //.moveTo(position.toPoint)
+    //Shape.Polygon(hitbox.corners, Fill.None, Stroke(3, RGBA.Green)),
+    //Shape.Box(hitbox, Fill.None, Stroke(3, RGBA.Red)),
+    //Shape.Box(attackHitbox, Fill.None, Stroke(2, RGBA.Red)),
+    //Shape.Polygon(attackHitbox.corners, Fill.None, Stroke(2, RGBA.Green))
   )
 }
 
 object Player {
+  val kickSize  = Point(13, 6)
+  val punchSize = Point(16, 5)
+
+  def renderSheet(isPlayerOne: Boolean) = Graphic(
+    32,
+    32,
+    //Material.ImagePlayer1lrefssetName).withTint(this.color)
+    if (isPlayerOne) Material.Bitmap(Player1.ref)
+    else Material.Bitmap(Player2.ref)
+  )
+
+  def renderNormal(isPlayerOne: Boolean) =
+    renderSheet(isPlayerOne).withCrop(0, 0, 32, 32)
+  def renderStunned(isPlayerOne: Boolean) =
+    renderSheet(isPlayerOne).withCrop(1 * 32, 0, 32, 32)
+  def renderPunch(isPlayerOne: Boolean) =
+    renderSheet(isPlayerOne).withCrop(2 * 32, 0, 32, 32)
+  def renderKick(isPlayerOne: Boolean) =
+    renderSheet(isPlayerOne).withCrop(3 * 32, 0, 32, 32)
+
   def computeHitbox(position: Vector2, isAttack: Boolean) = {
     if (isAttack) {
-      val ul = position + Vector2(6, 0)
-      val lr = ul + Vector2(20, 32)
+      val ul = position + Vector2(7, 1)
+      val lr = ul + Vector2(16, 31)
       Rectangle.fromTwoPoints(ul.toPoint, lr.toPoint)
     } else {
       val ul = position + Vector2(10, 26)
@@ -234,8 +230,8 @@ object Player {
       playerUL.y < blockLR.y &&
       playerLR.y > blockUL.y*/
       blockHitbox.overlaps(playerHitbox)
-    ) {
+    )
       Some(blockY - 32)
-    } else None
+    else None
   }
 }

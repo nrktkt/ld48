@@ -39,7 +39,8 @@ object EndGameScene extends Scene[Unit, GlobalModel, Unit] {
     Outcome(
       SceneUpdateFragment(
         Layer(
-          HelloIndigo.gameBindingKey
+          HelloIndigo.gameBindingKey,
+          model.winner.render.toList
         )
       )
     )

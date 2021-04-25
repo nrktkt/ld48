@@ -49,6 +49,9 @@ object GameScene extends Scene[Unit, GlobalModel, Unit] {
     case KeyboardEvent.KeyDown(Key.KEY_E) =>
       Outcome(model.copy(player1 = model.player1.punch))
 
+    case KeyboardEvent.KeyDown(Key.KEY_0) =>
+      Outcome(model.copy(halted = !model.halted))
+
     case FrameTick if (!model.gameOver) =>
       Outcome(
         model.update(
