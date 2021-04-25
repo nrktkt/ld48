@@ -1,4 +1,5 @@
 import indigo.shared.time.Seconds
+import indigo.shared.datatypes.Rectangle
 package object ld48 {
   implicit def autoSome[A](a: A): Option[A] = Some(a)
   implicit def timeToDouble(t: Seconds)     = t.toDouble
@@ -8,4 +9,6 @@ package object ld48 {
   implicit def eitherDirectionRight(
       right: "right"
   ): Right[Nothing, "right"] = Right(right)
+
+  def overlaps(a: Rectangle, b: Rectangle) = {}
 }
