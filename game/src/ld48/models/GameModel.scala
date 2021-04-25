@@ -2,6 +2,7 @@ package ld48.models
 
 import indigo.shared.time.Seconds
 import indigo.shared.datatypes.Vector2
+import indigo.shared.datatypes.RGBA
 import ld48._
 
 case class GameModel(
@@ -60,8 +61,8 @@ object GameModel {
     GameModel(
       time = Seconds(0),
       spawnTimer = Seconds(99), // always spawn one right away
-      player1 = Player("right", Vector2(100, 20), Vector2(0, 0), Vector2(0, 0)),
-      player2 = Player("left", Vector2(300, 20), Vector2(0, 0), Vector2(0, 0)),
+      player1 = Player("right", Vector2(100, 20), Vector2(0, 0), Vector2(0, 0), RGBA.Green),
+      player2 = Player("left", Vector2(300, 20), Vector2(0, 0), Vector2(0, 0), RGBA.Red),
       platforms = Platform.initial,
       gameOver = false
     )

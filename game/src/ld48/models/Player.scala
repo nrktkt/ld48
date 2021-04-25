@@ -16,6 +16,7 @@ case class Player(
     position: Vector2,
     velocity: Vector2,
     acceleration: Vector2,
+    color: RGBA = RGBA.White,
     leftDown: Boolean = false,
     rightDown: Boolean = false,
     punchCooldown: Seconds = Seconds.zero,
@@ -139,7 +140,7 @@ case class Player(
     Graphic(
       32,
       32,
-      Material.ImageEffects(HelloIndigo.playerAssetName).withTint(RGBA.Red)
+      Material.ImageEffects(HelloIndigo.playerAssetName).withTint(this.color)
     ) //Material.Bitmap(HelloIndigo.playerAssetName))
       //.withMaterial(Material.ImageEffects)
       .flipHorizontal(facing.isLeft)
