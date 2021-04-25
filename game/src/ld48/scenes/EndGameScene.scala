@@ -20,7 +20,7 @@ object EndGameScene extends Scene[Unit, GlobalModel, Unit] {
 
   def updateModel(context: FrameContext[Unit], model: SceneModel) = {
     case KeyboardEvent.KeyUp(Key.SPACE) =>
-      Outcome(model).addGlobalEvents(SceneEvent.JumpTo(GameScene.name))
+      Outcome(model.reset()).addGlobalEvents(SceneEvent.JumpTo(GameScene.name))
 
     case _: GlobalEvent => Outcome(model)
   }

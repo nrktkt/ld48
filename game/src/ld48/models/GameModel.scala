@@ -34,7 +34,7 @@ case class GameModel(
 
     var updatedGameOver =
       if (updatedPlayer1.position.y < -10 || updatedPlayer2.position.y < -10)
-        false
+        true
       else false
 
     this.copy(
@@ -49,6 +49,8 @@ case class GameModel(
 
   def render =
     (player1.render ++ player2.render ++ platforms.flatMap(_.render)).toList
+
+  def reset() : GameModel = GameModel.initial
 
 }
 

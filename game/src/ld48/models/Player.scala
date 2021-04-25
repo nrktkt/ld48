@@ -25,7 +25,7 @@ case class Player(
   private val maxStunCooldown  = Seconds(1)
   private val maxPunchCooldown = Seconds(.25)
   private val maxKickCooldown  = Seconds(.5)
-  private val moveAcceleration = 20.0  // TODO Tune
+  private val moveAcceleration = 50.0  // TODO Tune
   private val dragCoef         = 0.1
   private val maxSpeed         = 200.0 // super high drag?
   private val moveSpeed        = 20.0
