@@ -51,6 +51,7 @@ object HelloIndigo extends IndigoGame[Unit, Unit, GlobalModel, Unit] {
     GameConfig.default
       .withViewport(viewportWidth, 900)
       .withMagnification(magnification)
+      .useWebGL2
 
   val animations: Set[Animation] =
     Set.empty

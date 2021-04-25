@@ -156,7 +156,7 @@ case class Player(
         case m: LegacyEffects => m.withTint(RGBA.Red)
         case m                => m
       }*/,
-    Shape
+    /*Shape
       .Polygon(
         Fill.Color(RGBA.Zero),
         Stroke(3, RGBA.Red)
@@ -165,7 +165,7 @@ case class Player(
         hitbox.topRight,
         hitbox.bottomRight,
         hitbox.bottomLeft
-      ),
+      ),*/
     Shape
       .Polygon(
         Fill.Color(RGBA.Zero),
