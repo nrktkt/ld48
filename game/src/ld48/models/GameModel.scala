@@ -60,7 +60,7 @@ case class GameModel(
   }
 
   def render =
-    (renderBackground ++ player1.render ++ player2.render ++ platforms
+    (player1.render ++ player2.render ++ platforms
       .flatMap(
         _.render
       )).toList

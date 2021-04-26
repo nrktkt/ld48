@@ -25,7 +25,6 @@ object Platform {
     val updatedPlatforms   = platforms.updated(holeIndex, None)
     Platform(
       y, // add platforms under the map in case player gets a lucky fall through
-      //Seq.fill(11)(getRandomBlock(r))
       updatedPlatforms
     )
   }

@@ -82,7 +82,6 @@ object GameScene extends Scene[Unit, GlobalModel, Unit] {
       SceneUpdateFragment(
         Layer(
           HelloIndigo.gameBindingKey,
-          //Graphic(Rectangle(0, 0, 32, 32), 1, Material.Bitmap(assetName)) ::
           model.render
         )
       )

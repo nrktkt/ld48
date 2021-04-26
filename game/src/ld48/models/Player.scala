@@ -166,11 +166,9 @@ case class Player(
   def render = Seq(
     renderPlayer
       .flipHorizontal(facing.isLeft)
-      .moveTo(position.toPoint)
-    //Shape.Polygon(hitbox.corners, Fill.None, Stroke(3, RGBA.Green)),
-    //Shape.Box(hitbox, Fill.None, Stroke(3, RGBA.Red)),
-    //Shape.Box(attackHitbox, Fill.None, Stroke(2, RGBA.Red)),
-    //Shape.Polygon(attackHitbox.corners, Fill.None, Stroke(2, RGBA.Green))
+      .moveTo(position.toPoint),
+    Shape.Polygon(hitbox.corners, Fill.None, Stroke(3, RGBA.Green)),
+    Shape.Polygon(attackHitbox.corners, Fill.None, Stroke(2, RGBA.Green))
   )
 }
 
@@ -181,7 +179,6 @@ object Player {
   def renderSheet(isPlayerOne: Boolean) = Graphic(
     32,
     32,
-    //Material.ImagePlayer1lrefssetName).withTint(this.color)
     if (isPlayerOne) Material.Bitmap(Player1.ref)
     else Material.Bitmap(Player2.ref)
   )
@@ -213,24 +210,9 @@ object Player {
       blockI: Int,
       blockY: Double
   ): Option[Double] = {
-
     val blockHitbox = Block.hitbox(blockY, blockI)
-    /*
-    val blockUL     = blockHitbox.topLeft
-    val blockLR     = blockHitbox.bottomRight
 
-    val playerUL = playerHitbox.topLeft
-    val playerLR = playerHitbox.bottomRight
-     */
-
-    if (
-      /*
-      playerUL.x < blockLR.x &&
-      playerLR.x > blockUL.x &&
-      playerUL.y < blockLR.y &&
-      playerLR.y > blockUL.y*/
-      blockHitbox.overlaps(playerHitbox)
-    )
+    if (blockHitbox.overlaps(playerHitbox))
       Some(blockY - 32)
     else None
   }
