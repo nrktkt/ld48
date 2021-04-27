@@ -1,0 +1,90 @@
+{ "frames": {
+    "down-dude-all 0.aseprite": {
+     "frame": { "x": 0, "y": 0, "w": 32, "h": 32 },
+     "rotated": false,
+     "trimmed": false,
+     "spriteSourceSize": { "x": 0, "y": 0, "w": 32, "h": 32 },
+     "sourceSize": { "w": 32, "h": 32 },
+     "duration": 150
+    },
+    "down-dude-all 1.aseprite": {
+     "frame": { "x": 32, "y": 0, "w": 32, "h": 32 },
+     "rotated": false,
+     "trimmed": false,
+     "spriteSourceSize": { "x": 0, "y": 0, "w": 32, "h": 32 },
+     "sourceSize": { "w": 32, "h": 32 },
+     "duration": 150
+    },
+    "down-dude-all 2.aseprite": {
+     "frame": { "x": 64, "y": 0, "w": 32, "h": 32 },
+     "rotated": false,
+     "trimmed": false,
+     "spriteSourceSize": { "x": 0, "y": 0, "w": 32, "h": 32 },
+     "sourceSize": { "w": 32, "h": 32 },
+     "duration": 150
+    },
+    "down-dude-all 3.aseprite": {
+     "frame": { "x": 96, "y": 0, "w": 32, "h": 32 },
+     "rotated": false,
+     "trimmed": false,
+     "spriteSourceSize": { "x": 0, "y": 0, "w": 32, "h": 32 },
+     "sourceSize": { "w": 32, "h": 32 },
+     "duration": 150
+    },
+    "down-dude-all 4.aseprite": {
+     "frame": { "x": 128, "y": 0, "w": 32, "h": 32 },
+     "rotated": false,
+     "trimmed": false,
+     "spriteSourceSize": { "x": 0, "y": 0, "w": 32, "h": 32 },
+     "sourceSize": { "w": 32, "h": 32 },
+     "duration": 150
+    },
+    "down-dude-all 5.aseprite": {
+     "frame": { "x": 160, "y": 0, "w": 32, "h": 32 },
+     "rotated": false,
+     "trimmed": false,
+     "spriteSourceSize": { "x": 0, "y": 0, "w": 32, "h": 32 },
+     "sourceSize": { "w": 32, "h": 32 },
+     "duration": 150
+    },
+    "down-dude-all 6.aseprite": {
+     "frame": { "x": 192, "y": 0, "w": 32, "h": 32 },
+     "rotated": false,
+     "trimmed": false,
+     "spriteSourceSize": { "x": 0, "y": 0, "w": 32, "h": 32 },
+     "sourceSize": { "w": 32, "h": 32 },
+     "duration": 150
+    },
+    "down-dude-all 7.aseprite": {
+     "frame": { "x": 224, "y": 0, "w": 32, "h": 32 },
+     "rotated": false,
+     "trimmed": false,
+     "spriteSourceSize": { "x": 0, "y": 0, "w": 32, "h": 32 },
+     "sourceSize": { "w": 32, "h": 32 },
+     "duration": 150
+    }
+  },
+  "meta": {
+   "app": "http://www.aseprite.org/",
+   "version": "1.2.27",
+   "image": "down-dude-sheet-p2.png",
+   "format": "RGBA8888",
+   "size": { "w": 256, "h": 32 },
+   "scale": "1",
+   "frameTags": [
+    { "name": "running", "from": 4, "to": 7, "direction": "forward" }
+   ],
+   "layers": [
+    { "name": "Group 1" },
+    { "name": "body", "group": "Group 1", "opacity": 255, "blendMode": "normal" },
+    { "name": "eyes", "group": "Group 1", "opacity": 255, "blendMode": "normal" },
+    { "name": "backpack", "group": "Group 1", "opacity": 255, "blendMode": "normal" },
+    { "name": "Bottom Legs", "opacity": 255, "blendMode": "normal" },
+    { "name": "Leg Top", "opacity": 255, "blendMode": "normal" },
+    { "name": "arms", "opacity": 255, "blendMode": "normal" }
+   ],
+   "slices": [
+   ]
+  }
+ }
+ 
