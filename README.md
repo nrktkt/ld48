@@ -2,7 +2,7 @@
 
 An original game for [Ludum Dare 48](https://ldjam.com/events/ludum-dare/48)
 
-## [Play!](dist)
+## [Play!](https://kag0.github.io/ld48/dist/)
 
 The objective of the game is to avoid hitting the ceiling (which is coated in invisible death spikes).  
 Move the players with A and D, and J and L.  
