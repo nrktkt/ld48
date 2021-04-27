@@ -1,6 +1,6 @@
 # The Shaft
 
-An original game for (Ludum Dare 48)[https://ldjam.com/events/ludum-dare/48]
+An original game for [Ludum Dare 48](https://ldjam.com/events/ludum-dare/48)
 
 ## [Play!](dist)
 
